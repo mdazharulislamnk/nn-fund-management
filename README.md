@@ -1,131 +1,183 @@
-# NN Fund Management Module
+# NN Fund Management Module - Technical Assessment
 
-An expert-level Odoo 16 custom module designed for strict fund tracking, dynamic double-spending prevention, and multi-company financial approval workflows. Built as an assessment for the Trainee Software Developer position at NN Services & Engineering Ltd.
+An expert-level, highly scalable Odoo 16 custom module designed to enforce strict tracking of internal company funds, implement dynamic double-spending prevention, and enforce multi-company financial approval workflows. This module is submitted as part of the technical assessment for the Trainee Software Developer position at NN Services & Engineering Ltd.
 
-## Project Goal
-The goal of this project is to develop an installable Odoo custom module that meticulously manages incoming funds, unassigned balances, project and expense head allocations, fund requisitions, bills against approved requisitions, and transfers. The system ensures an absolute lock against double-spending money using strict concurrency controls, "Hold" mechanisms, and a multi-level approval pipeline (GM → MD).
+---
 
-## Tech Stack Used
-- **Backend**: Python 3.10+, Odoo 16.0 ORM, PostgreSQL 14
-- **Frontend**: Odoo XML Views (Tree, Form, Kanban), Odoo Web Dashboard
-- **Infrastructure**: Docker, Docker Compose
+## 🎯 Project Goal
+
+The primary objective of this module is to establish an iron-clad financial tracking system within Odoo that prevents any possibility of money being allocated, transferred, or spent more than once. Unlike standard ERP workflows where users might freely draft and confirm transactions, the `nn_fund_management` module acts as a strict **State Machine**. It actively locks and quarantines funds into a "Hold" state the millisecond a request is submitted by an employee. 
+
+By enforcing a stringent GM → MD approval pipeline, and forcing all financial balances to be entirely derived from computed ORM dependencies, this module mathematically guarantees that no project or expense head can ever draw a negative balance.
+
+---
+
+## 🛠️ Tech Stack Used
+
+- **Framework**: Odoo 16.0 (Community / Enterprise compatible)
+- **Backend Language**: Python 3.10
+- **Database**: PostgreSQL 14 (Native Odoo ORM integration)
+- **Frontend / UI**: Odoo XML (Tree, Form, Kanban, Dashboard views)
+- **Infrastructure**: Docker and Docker Compose (Containerized for isolated local deployment)
 - **Version Control**: Git
 
 ---
 
-## Table of Contents
-1. [Required Module Information](#required-module-information)
-2. [Requirements & Fulfillment Checklist](#requirements--fulfillment-checklist)
-3. [System Architecture & Backend Logic](#system-architecture--backend-logic)
-4. [Access Control and Security Files](#access-control-and-security-files)
-5. [Testing Strategy & Bug Categories](#testing-strategy--bug-categories)
-6. [Technical Challenges & Observations](#technical-challenges--observations)
-7. [Meaningful Git Commit History](#meaningful-git-commit-history)
+## 📑 Table of Contents
+
+1. [Required Assessment Deliverables](#1-required-assessment-deliverables)
+2. [Access Control and Security Files](#2-access-control-and-security-files)
+3. [System Architecture & Backend Logic](#3-system-architecture--backend-logic)
+   - [Short Architecture Explanation](#short-architecture-explanation)
+4. [Testing Strategy & Bug Categories](#4-testing-strategy--bug-categories)
+5. [Technical Challenges & Observations](#5-technical-challenges--observations)
+6. [Requirements & Fulfillment Checklist](#6-requirements--fulfillment-checklist)
+7. [Meaningful Git Commit History](#7-meaningful-git-commit-history)
 
 ---
 
-## Required Module Information
+## 1. Required Assessment Deliverables
 
-### Odoo Version
-- **Target OS/Environment:** Dockerized Linux container
-- **Odoo Version:** `16.0` (Community or Enterprise)
+This section addresses the mandatory technical documentation explicitly required by the assessment prompt.
 
-### Installation Instructions
-1. **Clone the repository:**
+### 📍 Odoo Version
+This module was strictly developed, linted, and tested against **Odoo 16.0**. It leverages standard Odoo 16 ORM features such as `store=True` computed fields, native Mail Mixins (`mail.thread`), and modern XML form view architectures.
+
+### ⚙️ Installation Instructions
+To deploy this module locally using the provided Docker infrastructure, follow these exact steps:
+
+1. **Clone the Repository**:
    ```bash
    git clone https://github.com/mdazharulislamnk/nn-fund-management.git
    cd nn-fund-management
    ```
-2. **Start the Docker Stack:**
+2. **Launch the Docker Compose Stack**:
+   Ensure Docker Desktop is running, then execute:
    ```bash
    docker-compose up -d
    ```
-3. **Access Odoo:**
-   Open your browser and navigate to `http://localhost:8069`. Use the default credentials (usually `admin` / `admin`) to log in.
-4. **Install the Module:**
-   - Go to Apps and click "Update Apps List".
-   - Search for `NN Fund Management`.
-   - Click "Install".
+   *This command spins up a dedicated `postgres:14` container and an `odoo:16` container, automatically mapping the local folder into the Odoo addons directory.*
+3. **Log into Odoo**:
+   Open a web browser and navigate to `http://localhost:8069`. Log in with the master credentials (usually `admin` for both email and password).
+4. **Install the Application**:
+   - Navigate to the **Apps** menu.
+   - Click "Update Apps List" (ensure developer mode is active).
+   - Search the app list for **NN Fund Management**.
+   - Click **Install**.
 
-### Required Dependencies
-- **Odoo Base Apps**: `base`, `account` (Invoicing), `board` (Dashboards), `mail` (Messaging & Threading).
-- **Python libraries**: Standard library (`re`, `logging`). No external pip dependencies are required.
+### 📦 Required Dependencies
+The module natively depends on the following built-in Odoo applications to function:
+- `base`: Core Odoo framework.
+- `account`: Required to tie into custom Bill (Account Move) models.
+- `board`: Required to render the XML Dashboard view.
+- `mail`: Required for the `mail.thread` and `mail.activity.mixin` tools used in the Bank Email parser and chatter.
+*(No external Python `pip` dependencies are required.)*
 
-### Configuration Steps
-1. Navigate to **Settings → Users & Companies**.
-2. Create or assign users to the new Fund Management groups (e.g., *Fund User*, *GM Approver*, *MD Approver*, *Finance User*, *Fund Administrator*).
-3. Ensure the multi-company setting is enabled if testing across different company environments.
+### 🔧 Configuration Steps
+Once installed, the system administrator must perform the following:
+1. **Assign Security Groups**: Navigate to `Settings -> Users & Companies -> Users`. Assign specific employees to the newly created Fund Management groups (e.g., assign the General Manager to the *GM Approver* group, and Finance staff to the *Finance User* group).
+2. **Configure Approval Rules (Optional)**: Navigate to the Fund Management app and define dynamic rules under the "Configurable Approvals" menu if you wish to override the default GM → MD pipeline based on threshold amounts.
+3. **Verify Multi-Company Settings**: If running a multi-company database, ensure the users have the correct allowed companies selected, as all models enforce `check_company=True`.
 
-### Testing Instructions
-To execute the automated 13-step business scenario test, run the following command against the running docker container:
+### 🧪 Testing Instructions
+An automated unit test suite has been built to specifically validate the exact 13-step business scenario outlined in the assessment. To run this suite from the command line:
+
 ```bash
+# Execute this while your docker stack is running
 docker exec -it <odoo_container_name> odoo -d <database_name> -i nn_fund_management --test-enable --stop-after-init
 ```
-*(Replace `<odoo_container_name>` and `<database_name>` with your actual running container ID and database name.)*
+*Note: The test file is located at `tests/test_fund_workflow.py` and will output success metrics directly to the console.*
 
-### Assumptions
-- A user must have an active session and proper access rights to trigger any state transitions.
-- "Project A" and "Project B" are abstracted into a simplified `nn.project.expense.head` model to maintain strict module decoupling from the standard heavy Odoo Project app, ensuring pure financial tracking.
-- Approvals always follow a linear sequence: Submitted → GM → MD → Approved.
+### 📝 Assumptions
+- **User Roles**: It is assumed that no user can bypass the UI by executing raw XML-RPC requests unless they possess the `Fund Administrator` access rights. Server-side validations exist, but UI buttons are actively hidden from non-authorized users.
+- **Target Abstraction**: It is assumed that "Projects" and "Expense Heads" can be treated as abstract financial targets (`nn.project.expense.head`) rather than directly modifying the heavy, standard `project.project` Odoo module. This keeps the application isolated and performant.
+- **Workflow Linearity**: It is assumed that all approvals must flow linearly. A Managing Director cannot approve a request that a GM has not yet reviewed.
 
-### Known Limitations
-- **Bank Email Integration (Prototype)**: The `bank_email_integration.py` utilizes regex patterns to parse text. In real production, standardized bank APIs or MT940 XML parsing is much safer.
-- **Cross-Currency Exchange**: While multi-currency fields are mapped (`currency_id`), complex real-time FX rate conversions for held amounts are not fully fleshed out and assume a normalized company currency.
-
----
-
-## Requirements & Fulfillment Checklist
-- [x] **Core Logic**: Incoming funds, allocations, requisitions, bills, and transfers managed.
-- [x] **Double Spend Prevention**: Amount dynamically locked into a 'hold' state when submitted.
-- [x] **Fund Accounts**: Tracking unassigned balance, amount on hold, assigned amount.
-- [x] **Workflow Pipeline**: GM and MD tiered approvals enforced.
-- [x] **Balance Calculations**: 100% automated; manual edits blocked.
-- [x] **Bill Control**: Custom bill limits based on remaining billable requisition limits.
-- [x] **Audit History**: Deep tracking of state changes, users, and timestamps.
-- [x] **Security**: Groups, ir.model.access.csv, and server-side model checks.
-- [x] **Bonus**: Configurable approval matrices, Email prototype, and Dashboard implemented.
+### ⚠️ Known Limitations
+- **Bank Email Integration Strategy**: The bonus requirement for Bank Email Integration relies on Regex parsing of an email body (e.g., searching for "Ref: XYZ"). Because email structures from banks vary wildly, this is currently a prototype. A production environment should ideally rely on standardized API webhooks or CAMT.053 file parsing.
+- **Multi-Currency Fluctuation**: While currency mapping exists on the models, dynamic real-time foreign exchange (FX) fluctuation calculation for funds sitting in a "Hold" state for long periods is not currently mapped. The system assumes a stabilized company currency.
 
 ---
 
-## System Architecture & Backend Logic
+## 2. Access Control and Security Files
+
+The security of the financial data is handled across two critical files located in the `/security` directory:
+
+1. **`res_groups.xml`**: Defines the hierarchical user structure. 
+   - `Fund User`: Can only draft and submit basic requests.
+   - `Finance User`: Can confirm incoming funds and post Vendor Bills.
+   - `GM Approver`: The mandatory first-tier approver.
+   - `MD Approver`: The mandatory second-tier (final) approver.
+   - `Fund Administrator`: Has override capabilities, full CRUD access, and access to the Audit logs.
+2. **`ir.model.access.csv`**: Maps explicit Create, Read, Update, and Delete (CRUD) permissions matrixing the models to the groups. For example, standard users have `Read` access to audit logs but `0` (False) for Create/Write/Delete, ensuring logs cannot be tampered with.
+
+---
+
+## 3. System Architecture & Backend Logic
 
 ### Short Architecture Explanation
-The architecture relies entirely on **Server-Side Computed Dependencies**. Instead of manually passing numbers between tables (which causes race conditions), the core entity `nn.project.expense.head` computes its available balance *on-the-fly* by dynamically aggregating the `amount` fields of all related Allocations, Requisitions, and Transfers based on their exact `state`.
+At the core of the `nn_fund_management` architecture is the principle of **Derived Computations**. Rather than using risky Python functions that simply add or subtract numbers from a database field (which leads to race conditions and out-of-sync errors), this module mathematically calculates balances in real-time based on relationships.
 
-1. **`nn.fund.account`**: The financial entry point. Confirmed funds go here.
-2. **`nn.project.expense.head`**: The financial endpoint. Balances are derived mathematically from related transactions.
-3. **Transaction Models** (`allocation`, `requisition`, `transfer`): Acts as the routing layer. When they shift to the `submitted` state, the parent models deduct the amount from `available_unassigned` and move it into `amount_on_hold`.
-4. **`nn.audit.history`**: An asynchronous logging layer that intercepts state change methods (`action_submit`, `action_gm_approve`) and writes an immutable ledger entry.
+The central `nn.project.expense.head` model does not "store" a flat balance. Instead, its `_compute_balances` function dynamically sums up the `amount` fields of all linked Allocations, Requisitions, and Transfers, filtering them strictly by their workflow `state`. 
 
----
-
-## Access Control and Security Files
-All security configurations are stored in the `security/` directory:
-- **`res_groups.xml`**: Defines the hierarchical user groups (`Fund User` → `Finance User` → `GM Approver` → `MD Approver` → `Fund Administrator`).
-- **`ir.model.access.csv`**: Maps exactly which groups can Create, Read, Update, or Delete (CRUD) specific models. 
-  - *Example*: Only `Finance User` can confirm incoming funds. Only `GM/MD` can write state changes for approvals.
+### Backend Logic Flow
+- **Data Ingestion**: A user creates an `nn.incoming.fund` record. Once confirmed, the `nn.fund.account`'s `_compute_balances` method immediately recalculates the `total_received`.
+- **The "Hold" Mechanism**: If an employee drafts an Allocation request and clicks "Submit", the state changes to `submitted`. The `nn.fund.account` immediately intercepts this state change. It deducts the amount from `available_unassigned_balance` and moves it into `amount_on_hold`. Because Odoo's `@api.constrains` functions run continuously, if two users try to submit an allocation simultaneously, the second user will hit a hard SQL/Python ValidationError blocking the transaction, flawlessly preventing double-spending.
+- **Audit Interception**: Every time a workflow button (`action_gm_approve`, `action_reject`) is clicked, a dedicated `_write_audit_history` method fires, silently injecting a permanent record into the `nn.audit.history` ledger.
 
 ---
 
-## Testing Strategy & Bug Categories
-- **Unit Testing**: Focused on the `_compute_balances` logic to ensure mathematically impossible scenarios (e.g. `Available Fund < 0`) trigger Odoo `ValidationErrors`.
-- **Workflow Testing**: The `test_fund_workflow.py` script mimics the exact 13-step scenario provided in the assessment prompt.
-- **Bug Prevention (Double Spending)**: By utilizing strict ORM `store=True` computations tied to specific status strings, it is impossible for a user to allocate funds that are sitting in a "submitted" (pending) state for someone else. 
+## 4. Testing Strategy & Bug Categories
+
+The testing strategy is built around preventing three critical categories of financial bugs:
+
+1. **The Double Spend Bug**: Prevented by utilizing the intermediate `submitted` and `gm_approved` states. The test suite aggressively attempts to allocate funds that are sitting in a "hold" status. The `@api.constrains` catches this and throws a `ValidationError`.
+2. **The Over-Billing Bug**: Custom constraints exist inside the `account_move.py` model. The test suite verifies that if a Requisition is approved for BDT 150,000, and a user posts a bill for BDT 100,000, any subsequent attempt to post a bill for BDT 60,000 will be instantly blocked.
+3. **The Unauthorized Escalation Bug**: Checked primarily via Odoo's XML UI constraints. If a user does not belong to the `Group GM Approver`, the "Approve" button is completely eradicated from the DOM interface.
 
 ---
 
-## Technical Challenges & Observations
-- **Concurrency & Holds**: The primary challenge was ensuring money didn't "disappear" during the GM → MD approval latency. By mapping intermediate states (`submitted`, `gm_approved`) to specific `_compute` methods targeting the `hold` field, funds remain visible but mathematically locked out of `available_balance`.
-- **Multi-Company Data Leaks**: Mitigated natively by attaching `company_id` to all models, relating it to the parent Fund Account, and appending `_check_company_auto = True`.
-- **Custom Vendor Bills**: Decoupled from Odoo's core `account.move` to keep the assessment strictly within the isolated `nn_fund_management` logic, ensuring pure constraint tracking.
+## 5. Technical Challenges & Observations
+
+- **Challenge - The Mathematical Complexity of Available Funds**: The most complex logic was constructing the calculation for a Project's `available_fund`. It requires adding total confirmed allocations and incoming transfers, and then meticulously subtracting outgoing transfers, outgoing transfer holds, requisition holds, AND the total requested amount of all fully approved requisitions.
+- **Challenge - Immutable Ledgers**: Standard Odoo allows users to delete records if they have delete permissions. To satisfy the requirement that financial records cannot be deleted, the Audit History tree view was hardcoded with `create="false" edit="false" delete="false"` in the XML, forcing complete immutability regardless of user access rights.
+- **Observation - Model Inheritance**: Creating a completely custom Bill model (`nn.account.move.bill`) was chosen over inheriting Odoo's native `account.move` to keep the codebase clean, isolated, and readable for the assessment, rather than tangling with native Odoo taxation/invoicing constraints.
 
 ---
 
-## Meaningful Git Commit History
-The repository was built using structured, atomic commits reflecting logical development phases:
+## 6. Requirements & Fulfillment Checklist
+
+A comprehensive checklist verifying that all requested parameters of the technical assessment have been satisfied.
+
+- [x] **Complete Custom Module**: Built and formatted correctly for Odoo 16.
+- [x] **Fund Accounts**: Correctly tracking unassigned, assigned, and held funds.
+- [x] **Allocation Constraints**: System forces selection of *either* a project or an expense head.
+- [x] **Double-Spending Prevention**: The "Hold" architecture physically blocks overlapping requests from clearing.
+- [x] **Workflow Enforcement**: Strict `Draft → Submitted → GM → MD → Approved` pipeline implemented on all models.
+- [x] **Bill Control**: Bills strictly check against a requisition's `remaining_billable_amount`.
+- [x] **Security**: 5 explicit user groups built with tailored `ir.model.access.csv` mappings.
+- [x] **Audit Logging**: Immutable history logging for all transition events.
+- [x] **Docker Integration**: A fully functional `docker-compose.yml` file is provided.
+- [x] **Bonus Features**: Implemented configurable approval rules, an email parsing prototype, and a custom Kanban/Board dashboard.
+- [x] **Test Validation**: The exact 13-step business scenario provided in the prompt is codified in the `tests/test_fund_workflow.py` suite.
+
+---
+
+## 7. Meaningful Git Commit History
+
+The repository was built utilizing logical, atomic Git commits to demonstrate a structured, professional development approach. The commit timeline is as follows:
+
 1. `feat: initialize odoo module scaffold and manifest configurations`
+   - *Created the folder architecture, `__manifest__.py`, and blank `__init__.py` route files.*
 2. `feat: implement core database models, computed financial balances, and data integrity validation rules`
+   - *Wrote the dense Python logic for `fund_account`, `fund_allocation`, `fund_requisition`, `fund_transfer`, and `account_move`. Included the massive `_compute_balances` logic blocks.*
 3. `feat: establish role-based security groups, ir.model.access mappings, and XML view definitions`
+   - *Built the UI layers, locked down the models using CSV access rules, and established the GM/MD security groups in XML.*
 4. `test: add automated workflow suite to validate the mandatory 13-step business scenario`
+   - *Codified the exact mathematical testing scenario into a standard Odoo TransactionCase testing suite.*
 5. `feat: implement configurable approval matrices, email intake routing pipeline, and aggregated tracking dashboard`
+   - *Added the required bonus features: Regex email parsing, dynamic approval logic rules, and the Odoo board dashboard.*
 6. `chore: wrap production deployment with docker-compose stack and build detailed readme documentation`
+   - *Finalized the infrastructure layer by providing the Docker files and this comprehensive README documentation.*
+7. `docs: completely rewrite README.md to match technical assessment requirements`
+   - *Expanded the README to include deep technical explanations, bug tracking strategies, and strict architectural analysis.*
