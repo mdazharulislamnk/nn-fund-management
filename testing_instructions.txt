@@ -1,0 +1,34 @@
+===================================================
+NN FUND MANAGEMENT - RUNNING & TESTING INSTRUCTIONS
+===================================================
+
+This document contains the commands to run the automated unit tests. The tests programmatically verify the 13-step business scenario and all security/bonus constraints without requiring manual data entry.
+
+PREREQUISITE
+---------------------------------------------------
+The Docker stack must already be running (`docker-compose up -d`) and the module must be installed on an active database. 
+
+RUNNING THE AUTOMATED TEST SUITE
+---------------------------------------------------
+1. Open your terminal in the `nn-fund-management` directory.
+
+2. Run the exact test command via Docker Compose:
+   docker-compose exec -T web odoo --db_host=db -r odoo -w odoo -d your_database_name -i nn_fund_management --test-enable --test-tags /nn_fund_management --stop-after-init
+
+   *(IMPORTANT: Replace "your_database_name" with the actual name of the database you created when you first opened the Odoo web UI. If you aren't sure, it is usually "odoo" or "postgres" by default).*
+
+WHAT THIS COMMAND DOES
+---------------------------------------------------
+- Connects securely to the running "web" (Odoo) container.
+- Connects to the "db" (PostgreSQL) container using the default internal docker credentials.
+- Forces Odoo to update the "nn_fund_management" module (`-i`).
+- Executes all Python tests matching the module's tag (`--test-tags`).
+- Immediately shuts down the test-runner after testing finishes so you can read the output logs (`--stop-after-init`).
+
+EXPECTED OUTPUT
+---------------------------------------------------
+The tests run synchronously. You will see Odoo logging the execution of the test methods (test_fund_workflow, test_security_audit, test_bonus_features). 
+
+If the architecture is completely intact, the terminal will conclude with:
+
+> INFO your_database_name odoo.tests.result: 0 failed, 0 error(s) of 5 tests when loading database
