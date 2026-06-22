@@ -1,4 +1,4 @@
-# Odoo Fund Management - Demonstration Guide
+# Odoo Fund Management - Demonstration Guide By Azhar
 
 This guide details exactly how to deploy the environment and navigate the interface to manually verify the features, security constraints, and financial logic of the module.
 
