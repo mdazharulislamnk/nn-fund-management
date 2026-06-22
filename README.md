@@ -43,6 +43,7 @@ By enforcing a stringent GM → MD approval pipeline, and forcing all financial 
 .
 ├── demonstration.md
 ├── docker-compose.yml
+├── Full_Testing_Guideline.md
 ├── explanation.md
 ├── README.md
 ├── setup_instructions.txt
