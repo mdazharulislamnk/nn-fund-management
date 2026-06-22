@@ -1,146 +1,132 @@
-# Complete Demonstration Script & Commands
+# Odoo Fund Management - Demonstration Guide
 
-This guide details exactly what to type in your terminal, which URLs to open, and the exact interface buttons to click during your video recording.
+This guide details exactly how to deploy the environment and navigate the interface to manually verify the features, security constraints, and financial logic of the module.
 
 ---
 
-## Phase 0: Starting the Environment (Terminal)
+## Phase 0: Starting the Environment
 
-Before you start recording your facecam, make sure the environment is running.
-
-1. **Open your VS Code Terminal.**
-2. **Start the server** by running this exact command:
+1. **Start the server** by running this exact terminal command in the project root:
    ```bash
    docker-compose up -d
    ```
-3. **Open the Odoo Interface:**
-   - If using your local PC: Open Chrome/Edge and go to `http://localhost:8069`
-   - If using GitHub Codespaces: Go to the **PORTS** tab at the bottom of VS Code, right-click on port `8069`, select **Port Visibility -> Public**, and click the globe icon to open it.
+2. **Open the Odoo Interface:**
+   - On a local machine: Open a browser and navigate to `http://localhost:8069`
+   - On GitHub Codespaces: Go to the **PORTS** tab, right-click on port `8069`, select **Port Visibility -> Public**, and open the provided URL.
 
 ---
 
-## Phase 1: Initial Setup & Installation (UI Interface)
+## Phase 1: Initial Setup & Installation
 
 1. **Log in to Odoo:**
    - Email: `admin`
    - Password: `admin`
 2. **Install the Module:**
-   - Click the top-left icon (the 9 squares / App Drawer).
+   - Click the top-left App Drawer.
    - Click **Apps**.
-   - In the top-right search bar, click the **'x'** next to the `Apps` filter to remove it.
-   - Type `nn_fund_management` and hit Enter.
-   - Click the **Activate** button. Wait for the page to reload.
+   - In the top-right search bar, remove the `Apps` filter.
+   - Search for `nn_fund_management`.
+   - Click the **Activate** button and wait for the system to reload.
 
 ---
 
-## Phase 2: Security and Access Control (Section 9)
+## Phase 2: Security and Access Control
 
-**Goal:** Show server-side security blocking unauthorized clicks.
+**Objective:** Verify that role-based security blocks unauthorized actions on the server side.
 
-1. **Create the Users:**
-   - Click the top-left App Drawer -> **Settings**.
-   - Under "Users & Companies", click **Users**.
-   - Click **New** (or Create).
-   - Name: `Mr. GM Approver`. Under the "Fund Management" dropdown, select **GM Approver**. Save.
-   - Click **New**. Name: `Mr. Fund User`. Under "Fund Management", select **Fund User**. Save.
-2. **Demonstrate the Block (Server-Side Security):**
-   - Click the top right profile icon and **Log out**.
+1. **Create Test Users:**
+   - Navigate to **Settings -> Users & Companies -> Users**.
+   - Create a user named `Mr. GM Approver` and assign the **GM Approver** role under "Fund Management". Save.
+   - Create a user named `Mr. Fund User` and assign the **Fund User** role under "Fund Management". Save.
+2. **Demonstrate Server-Side Blocking:**
+   - Log out of the admin account.
    - Log back in as `Mr. Fund User`.
-   - Open the App Drawer -> Click **Fund Management**.
-   - Go to the **Allocations** menu at the top. Click **New**.
-   - Fill in any Project and Amount. Click the **Submit** button (this is allowed).
-   - Now, explicitly click the **Approve** button.
-   - **Video Action:** A red error window will pop up saying "Access Denied". 
-   - **Say in video:** *"As you can see, hiding UI buttons is not enough. The Odoo server-side record rules actively block this Fund User from approving their own request."*
-3. **Approve properly:**
-   - Log out. Log in as `Mr. GM Approver`.
-   - Go to **Fund Management -> Allocations**.
-   - Open the pending allocation and click **Approve**. It will succeed.
+   - Navigate to **Fund Management -> Allocations** and click **New**.
+   - Enter a Project and Amount, then click **Submit**. (This action is permitted).
+   - Now, attempt to click the **Approve** button.
+   - **Expected Result:** A red Odoo "Access Denied" error will appear. This proves that server-side record rules actively block unauthorized users, rather than simply hiding UI buttons.
+3. **Approve Successfully:**
+   - Log out and log back in as `Mr. GM Approver`.
+   - Navigate to **Fund Management -> Allocations**.
+   - Open the pending allocation and click **Approve**. The request will successfully transition states.
 
 ---
 
-## Phase 3: Audit History & Bonus Features (Sections 10 & 11)
+## Phase 3: Audit History & Bonus Features
 
-1. **Audit History:**
-   - While still looking at the approved Allocation, scroll down to the bottom of the page (the Chatter area).
-   - **Video Action:** Highlight the logs.
-   - **Say in video:** *"Here is the Audit History. It immutably records the exact timestamp, the user who clicked the button, the state change, and the financial amount. This cannot be deleted."*
-2. **Configurable Approval Rules:**
-   - On the top menu bar, click **Configuration -> Approval Rules**.
-   - **Say in video:** *"This is the dynamic matrix. Instead of hardcoding rules, the company can configure that amounts between 50,000 and 200,000 require GM and Finance sequences."*
-3. **Dashboard:**
-   - Click **Dashboard** on the top menu.
-   - **Video Action:** Show the tracking widgets displaying "Total Funds Received", "Unassigned Balance", and "Held Amount".
+### Audit History
+1. Open any approved Allocation or Requisition.
+2. Scroll down to the bottom of the page to view the Chatter/Audit area.
+3. **Expected Result:** An immutable log detailing the exact timestamp, the user who triggered the state change, the status transition, and the financial amount. These logs cannot be deleted, ensuring strict financial compliance.
+
+### Configurable Approval Rules
+1. Navigate to **Fund Management -> Configuration -> Approval Rules**.
+2. **Expected Result:** A dynamic matrix allowing administrators to set approval sequences (e.g., GM followed by Finance) based on minimum and maximum thresholds. This replaces rigid hardcoded logic.
+
+### Dashboard
+1. Navigate to **Fund Management -> Dashboard**.
+2. **Expected Result:** A comprehensive board displaying widgets for Total Funds Received, Unassigned Balances, and Held Amounts.
 
 ---
 
-## Phase 4: The 13-Step Sample Demonstration (Section 13)
+## Phase 4: Sample Workflow Demonstration
 
-*Make sure you are logged in as Admin or a full Fund Administrator to do this smoothly.*
+*The following steps represent a continuous 13-step scenario testing the core financial constraints of the system. It is recommended to perform this as a full Fund Administrator.*
 
 **Step 1. Receive BDT 1,000,000**
-- Click **Fund Accounts** on the top menu. Click **New**.
-- Name: `Main Corporate Fund`. Save.
-- Click **Add Incoming Fund**. Amount: `1,000,000`. Confirm it.
+- Navigate to **Fund Accounts**. Click **New**.
+- Name the account `Main Corporate Fund` and save.
+- Click **Add Incoming Fund**, enter `1,000,000`, and confirm.
 
 **Step 2. Request BDT 600,000 for Project A**
-- Go to **Allocations** menu. Click **New**.
-- Source Fund: Select `Main Corporate Fund`.
-- Target: Create a new project called `Project A`.
-- Amount: `600,000`. Click **Submit**.
+- Navigate to **Allocations**. Click **New**.
+- Select `Main Corporate Fund` as the source.
+- Create and select `Project A` as the target.
+- Enter `600,000` and click **Submit**.
 
-**Step 3. Show that BDT 600,000 remains on hold**
-- Go back to **Fund Accounts** -> Open `Main Corporate Fund`.
-- **Video Action:** Point your mouse at the "Held Amount" field showing `600,000`. 
-- **Say in video:** *"The funds are dynamically locked and held while the request is pending."*
+**Step 3. Verify BDT 600,000 remains on hold**
+- Navigate back to the `Main Corporate Fund` account.
+- **Expected Result:** The `600,000` is now isolated in the "Held Amount" field, securing the funds while the request is pending.
 
 **Step 4. Reject the request & return money**
-- Go back to **Allocations**. Open the pending request.
-- Click **Reject**.
-- Go to **Fund Accounts**. Show that the Held Amount is back to `0` and Unassigned is `1,000,000`.
+- Open the pending Allocation and click **Reject**.
+- Return to the Fund Account.
+- **Expected Result:** The Held Amount reverts to `0` and the Unassigned Balance is restored to `1,000,000`.
 
 **Step 5. Submit again and approve**
-- Go back to the **Allocation**. Click **Reset to Draft**, then **Submit**, then **Approve**.
+- Open the Allocation, click **Reset to Draft**, then **Submit**, and finally **Approve**.
 
 **Step 6. Transfer BDT 200,000 from Project A to Project B**
-- Go to **Transfers** on the top menu. Click **New**.
-- Source: `Project A`.
-- Destination: Create `Project B`.
+- Navigate to **Transfers**. Click **New**.
+- Source: `Project A`. Destination: Create `Project B`.
 - Amount: `200,000`. Click **Submit**.
 
-**Step 7. Show Transfer Hold**
-- Go to **Project / Expense Heads** on the top menu. Open `Project A`.
-- **Video Action:** Point out that `200,000` is currently in the Transfer Hold state.
+**Step 7. Verify Transfer Hold**
+- Navigate to **Project / Expense Heads** and open `Project A`.
+- **Expected Result:** The `200,000` is deducted from available funds and locked in a Transfer Hold state.
 
 **Step 8. Approve the transfer**
-- Go back to **Transfers**. Click **Approve**. Project B now officially holds the funds.
+- Open the Transfer record and click **Approve**. Project B successfully receives the funds.
 
 **Step 9. Create a BDT 150,000 requisition for Project B**
-- Go to **Requisitions** on the top menu. Click **New**.
+- Navigate to **Requisitions**. Click **New**.
 - Source: `Project B`. Amount: `150,000`.
-- Click **Submit** then **Approve**.
+- Click **Submit**, then **Approve**.
 
 **Step 10. Create a BDT 100,000 partial bill**
-- Go to **Vendor Bills** (under the Accounting section or via a Smart Button if visible).
-- Select the `150,000` Requisition in the linked field.
-- Enter bill amount: `100,000`. Click **Confirm/Post**.
+- Navigate to **Vendor Bills** (via the Accounting app or a linked smart button).
+- Select the `150,000` Requisition.
+- Set the bill amount to `100,000` and click **Confirm**.
 
-**Step 11. Show that BDT 50,000 remains billable**
-- Go back to the **Requisition** record for Project B.
-- **Video Action:** Show the "Remaining Billable" field automatically calculated to `50,000`.
+**Step 11. Verify BDT 50,000 remains billable**
+- Return to the Requisition for Project B.
+- **Expected Result:** The "Remaining Billable" field is automatically calculated as `50,000`.
 
-**Step 12. Try to create another bill for BDT 60,000 and block it**
-- Go to **Vendor Bills**. Create a new bill.
-- Link it to the SAME requisition.
-- Enter amount: `60,000`. Click **Confirm**.
-- **Video Action:** A red validation error pops up. 
-- **Say in video:** *"The database constraint strictly blocks over-billing."*
+**Step 12. Attempt to create another bill for BDT 60,000 (Blocked)**
+- Create a new Vendor Bill linked to the exact same Requisition.
+- Set the amount to `60,000` and click **Confirm**.
+- **Expected Result:** A red validation error blocks the action, preventing over-billing.
 
-**Step 13. Try to use Project B’s requisition for Project A and block it**
-- Go to **Vendor Bills**. Create a new bill.
-- Link it to Project B's requisition, but select Project A in the Expense Head field. Click Confirm.
-- **Video Action:** Another red error pops up. 
-- **Say in video:** *"Cross-project billing is strictly blocked to prevent fund mismanagement."*
-
----
-*End of Video Recording.*
+**Step 13. Attempt to use Project B’s requisition for Project A (Blocked)**
+- Create a new Vendor Bill linked to Project B's requisition, but select Project A as the target Expense Head. Click **Confirm**.
+- **Expected Result:** A database constraint actively blocks the cross-project billing attempt, ensuring funds are not mismanaged.
