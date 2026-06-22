@@ -41,7 +41,6 @@ By enforcing a stringent GM → MD approval pipeline, and forcing all financial 
 
 ```text
 .
-├── conversation_history.md
 ├── demonstration.md
 ├── docker-compose.yml
 ├── explanation.md
@@ -370,3 +369,4 @@ This section details exactly how to deploy the environment and navigate the inte
 ---
 
 ### Implemented by Md. Azharul Islam
+**Software Engineer and Full Stack Developer**
