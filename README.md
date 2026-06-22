@@ -36,6 +36,51 @@ By enforcing a stringent GM → MD approval pipeline, and forcing all financial 
 
 ---
 
+## Directory Structure
+
+```text
+.
+├── docker-compose.yml
+├── explanation.md
+├── README.md
+├── Testing_Report.pdf
+├── setup_instructions.txt
+├── testing_instructions.txt
+└── nn_fund_management/
+    ├── __init__.py
+    ├── __manifest__.py
+    ├── models/
+    │   ├── __init__.py
+    │   ├── account_move.py
+    │   ├── approval_rule.py
+    │   ├── audit_history.py
+    │   ├── bank_email_integration.py
+    │   ├── fund_account.py
+    │   ├── fund_allocation.py
+    │   ├── fund_requisition.py
+    │   ├── fund_transfer.py
+    │   └── project_expense_head.py
+    ├── security/
+    │   ├── ir.model.access.csv
+    │   └── res_groups.xml
+    ├── tests/
+    │   ├── __init__.py
+    │   ├── test_bonus_features.py
+    │   ├── test_fund_workflow.py
+    │   └── test_security_audit.py
+    └── views/
+        ├── account_move_views.xml
+        ├── audit_history_views.xml
+        ├── fund_allocation_views.xml
+        ├── fund_dashboard.xml
+        ├── fund_requisition_views.xml
+        ├── fund_transfer_views.xml
+        ├── menu_views.xml
+        └── project_expense_head_views.xml
+```
+
+---
+
 ## 1. Required Assessment Deliverables
 
 This section addresses the mandatory technical documentation explicitly required by the assessment prompt.
