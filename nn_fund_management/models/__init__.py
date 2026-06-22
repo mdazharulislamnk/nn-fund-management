@@ -7,3 +7,5 @@ from . import fund_requisition
 from . import fund_transfer
 from . import account_move
 from . import audit_history
+from . import approval_rule
+from . import bank_email_integration

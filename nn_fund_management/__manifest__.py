@@ -30,6 +30,7 @@ Features Include:
         'views/account_move_views.xml',
         'views/audit_history_views.xml',
         'views/menu_views.xml',
+        'views/fund_dashboard.xml',
     ],
     'demo': [],
     'installable': True,
