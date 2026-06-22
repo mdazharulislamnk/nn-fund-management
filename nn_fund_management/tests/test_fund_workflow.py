@@ -96,12 +96,11 @@ class TestFundWorkflow(TransactionCase):
         self.assertEqual(requisition_b.remaining_billable_amount, 50000.0)
 
         # 8. Block an over-bill of BDT 60,000.
-        bill_2 = self.Bill.create({
-            'requisition_id': requisition_b.id,
-            'amount': 60000.0
-        })
-        with self.assertRaises(UserError):
-            bill_2.action_post()
+        with self.assertRaises(ValidationError):
+            bill_2 = self.Bill.create({
+                'requisition_id': requisition_b.id,
+                'amount': 60000.0
+            })
             
         # Or if it's blocked on create/write via constraints:
         # Actually in our code, the constraint is on write/create, so it might fail on create itself:
