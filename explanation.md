@@ -3,8 +3,7 @@
 This document provides a transparent breakdown of the development process, AI tool usage, and technical comprehension of the `nn_fund_management` module, fulfilling the explicit assessment guidelines.
 
 ## AI Tools Used
-- **DeepMind Antigravity (Agentic Coding Assistant)**: Used extensively for scaffolding the Odoo architecture, generating boilerplate XML data, setting up the automated test suites, and structuring the mathematical constraints for the `_compute_balances` logic.
-- **ChatGPT / Claude (Hypothetical)**: Used for high-level conceptualizing of the "Hold" strategy for double-spending prevention.
+- **DeepMind Antigravity (Agentic Coding Assistant)**: Used exclusively for scaffolding the entire Odoo architecture, generating boilerplate XML data, setting up the automated test suites, conceptualizing the "Hold" strategy for double-spending prevention, and structuring the mathematical constraints for the `_compute_balances` logic.
 
 ## Implemented Features
 - Strict Concurrency Control (Double-Spending Prevention)
