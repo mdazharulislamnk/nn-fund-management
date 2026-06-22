@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_nn_account_move_bill_form" model="ir.ui.view">
+        <field name="name">nn.account.move.bill.form</field>
+        <field name="model">nn.account.move.bill</field>
+        <field name="arch" type="xml">
+            <form string="Bill">
+                <header>
+                    <button name="action_post" string="Post" type="object" class="oe_highlight" states="draft" groups="nn_fund_management.group_finance_user"/>
+                    <button name="action_cancel" string="Cancel" type="object" states="draft,posted" groups="nn_fund_management.group_finance_user"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="requisition_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="target_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="amount" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_nn_account_move_bill_tree" model="ir.ui.view">
+        <field name="name">nn.account.move.bill.tree</field>
+        <field name="model">nn.account.move.bill</field>
+        <field name="arch" type="xml">
+            <tree string="Bills">
+                <field name="name"/>
+                <field name="requisition_id"/>
+                <field name="target_id"/>
+                <field name="amount"/>
+                <field name="date"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_nn_account_move_bill" model="ir.actions.act_window">
+        <field name="name">Fund Bills</field>
+        <field name="res_model">nn.account.move.bill</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

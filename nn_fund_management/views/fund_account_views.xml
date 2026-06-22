@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_nn_fund_account_form" model="ir.ui.view">
+        <field name="name">nn.fund.account.form</field>
+        <field name="model">nn.fund.account</field>
+        <field name="arch" type="xml">
+            <form string="Fund Account">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Account Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="total_received" widget="monetary" readonly="1"/>
+                            <field name="amount_on_hold" widget="monetary" readonly="1"/>
+                            <field name="total_assigned_amount" widget="monetary" readonly="1"/>
+                            <field name="available_unassigned_balance" widget="monetary" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Incoming Funds" name="incoming_funds">
+                            <field name="incoming_fund_ids" readonly="1">
+                                <tree>
+                                    <field name="date"/>
+                                    <field name="name"/>
+                                    <field name="sender"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_nn_fund_account_tree" model="ir.ui.view">
+        <field name="name">nn.fund.account.tree</field>
+        <field name="model">nn.fund.account</field>
+        <field name="arch" type="xml">
+            <tree string="Fund Accounts">
+                <field name="name"/>
+                <field name="total_received"/>
+                <field name="available_unassigned_balance"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_nn_fund_account" model="ir.actions.act_window">
+        <field name="name">Fund Accounts</field>
+        <field name="res_model">nn.fund.account</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Incoming Funds -->
+    <record id="view_nn_incoming_fund_form" model="ir.ui.view">
+        <field name="name">nn.incoming.fund.form</field>
+        <field name="model">nn.incoming.fund</field>
+        <field name="arch" type="xml">
+            <form string="Incoming Fund">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" states="draft,pending_verification" groups="nn_fund_management.group_finance_user"/>
+                    <button name="action_cancel" string="Cancel" type="object" states="draft,pending_verification" groups="nn_fund_management.group_finance_user"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Transaction Reference"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="fund_account_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="sender" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                        <group>
+                            <field name="amount" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_nn_incoming_fund_tree" model="ir.ui.view">
+        <field name="name">nn.incoming.fund.tree</field>
+        <field name="model">nn.incoming.fund</field>
+        <field name="arch" type="xml">
+            <tree string="Incoming Funds">
+                <field name="name"/>
+                <field name="fund_account_id"/>
+                <field name="date"/>
+                <field name="amount" sum="Total"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_nn_incoming_fund" model="ir.actions.act_window">
+        <field name="name">Incoming Funds</field>
+        <field name="res_model">nn.incoming.fund</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

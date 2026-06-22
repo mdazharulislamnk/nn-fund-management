@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_nn_audit_history_tree" model="ir.ui.view">
+        <field name="name">nn.audit.history.tree</field>
+        <field name="model">nn.audit.history</field>
+        <field name="arch" type="xml">
+            <tree string="Audit History" create="false" edit="false" delete="false">
+                <field name="date"/>
+                <field name="res_model"/>
+                <field name="res_id"/>
+                <field name="user_id"/>
+                <field name="action"/>
+                <field name="old_state"/>
+                <field name="amount"/>
+                <field name="comments"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_nn_audit_history" model="ir.actions.act_window">
+        <field name="name">Audit History</field>
+        <field name="res_model">nn.audit.history</field>
+        <field name="view_mode">tree</field>
+    </record>
+</odoo>

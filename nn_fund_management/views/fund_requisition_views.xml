@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_nn_fund_requisition_form" model="ir.ui.view">
+        <field name="name">nn.fund.requisition.form</field>
+        <field name="model">nn.fund.requisition</field>
+        <field name="arch" type="xml">
+            <form string="Fund Requisition">
+                <header>
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" states="draft"/>
+                    <button name="action_gm_approve" string="GM Approve" type="object" class="oe_highlight" states="submitted" groups="nn_fund_management.group_gm_approver"/>
+                    <button name="action_md_approve" string="MD Approve" type="object" class="oe_highlight" states="gm_approved" groups="nn_fund_management.group_md_approver"/>
+                    <button name="action_close" string="Close" type="object" states="md_approved" groups="nn_fund_management.group_finance_user"/>
+                    <button name="action_reject" string="Reject" type="object" states="submitted,gm_approved" groups="nn_fund_management.group_gm_approver,nn_fund_management.group_md_approver"/>
+                    <button name="action_cancel" string="Cancel" type="object" states="draft,submitted,gm_approved,rejected" groups="nn_fund_management.group_fund_administrator"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,gm_approved,md_approved,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="target_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="target_type" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="requested_amount" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="remaining_billable_amount" readonly="1"/>
+                            <field name="request_date" readonly="1"/>
+                            <field name="required_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Purpose" name="purpose">
+                            <field name="purpose" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </page>
+                        <page string="Bills" name="bills">
+                            <field name="bill_ids" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="amount"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_nn_fund_requisition_tree" model="ir.ui.view">
+        <field name="name">nn.fund.requisition.tree</field>
+        <field name="model">nn.fund.requisition</field>
+        <field name="arch" type="xml">
+            <tree string="Fund Requisitions">
+                <field name="name"/>
+                <field name="target_id"/>
+                <field name="requested_amount"/>
+                <field name="remaining_billable_amount"/>
+                <field name="request_date"/>
+                <field name="state" widget="badge" decoration-success="state == 'md_approved'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_nn_fund_requisition" model="ir.actions.act_window">
+        <field name="name">Fund Requisitions</field>
+        <field name="res_model">nn.fund.requisition</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
